@@ -19,6 +19,7 @@ public class Vehicle {
     private String make;
     private String model;
     private Integer year;
+    private Double displacement;
 
     @Column(name = "fuel_type")
     private String fuelType;
@@ -27,5 +28,5 @@ public class Vehicle {
     private Double price;
 
     @Column(name = "fuel_efficiency")
-    private double fuelEfficiency;
+    private Double fuelEfficiency;
 }

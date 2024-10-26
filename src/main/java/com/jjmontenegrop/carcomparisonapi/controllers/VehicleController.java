@@ -23,12 +23,13 @@ public class VehicleController {
             @RequestParam(required = false) String make,
             @RequestParam(required = false) String model,
             @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Double displacement,
             @RequestParam(required = false) String fuelType,
             @RequestParam(required = false) String transmission,
             @RequestParam(required = false) Double minPrice,
             @RequestParam(required = false) Double maxPrice) {
 
-        return vehicleService.getFilteredVehicles(make, model, year, fuelType, transmission, minPrice, maxPrice);
+        return vehicleService.getFilteredVehicles(make, model, year, displacement, fuelType, transmission, minPrice, maxPrice);
     }
 
     @PostMapping()

@@ -19,12 +19,12 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public List<Vehicle> getFilteredVehicles(String make, String model, Integer year, String fuelType, String transmission, Double minPrice, Double maxPrice) {
+    public List<Vehicle> getFilteredVehicles(String make, String model, Integer year, Double displacement, String fuelType, String transmission, Double minPrice, Double maxPrice) {
 
-        if (make != null && model != null && year != null && fuelType != null && transmission != null && minPrice != null && maxPrice != null) {
+        if (make != null && model != null && year != null && displacement != null && fuelType != null && transmission != null && minPrice != null && maxPrice != null) {
             return vehicleRepository.findAll();
         }
-        return vehicleRepository.findProductsByFilter(make, model, year, fuelType, transmission, minPrice, maxPrice);
+        return vehicleRepository.findProductsByFilter(make, model, year, displacement, fuelType, transmission, minPrice, maxPrice);
     }
 
     @Override

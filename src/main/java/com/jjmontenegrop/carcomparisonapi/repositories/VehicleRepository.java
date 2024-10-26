@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
@@ -16,6 +15,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
             "(:make IS NULL OR v.make = :make) AND " +
             "(:model IS NULL OR v.model = :model) AND " +
             "(:year IS NULL OR v.year = :year) AND " +
+            "(:displacement IS NULL OR v.displacement = :displacement) AND " +
             "(:fuelType IS NULL OR v.fuelType = :fuelType) AND " +
             "(:transmission IS NULL OR v.transmission = :transmission) AND " +
             "((:minPrice IS NULL AND :maxPrice IS NULL) OR " +
@@ -25,6 +25,7 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Long> {
     List<Vehicle> findProductsByFilter(@Param("make") String make,
                                        @Param("model") String model,
                                        @Param("year") Integer year,
+                                        @Param("displacement") Double displacement,
                                        @Param("fuelType") String fuelType,
                                        @Param("transmission") String transmission,
                                        @Param("minPrice") Double minPrice,
