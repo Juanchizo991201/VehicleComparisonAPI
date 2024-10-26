@@ -1,0 +1,236 @@
+1. Descripción General
+
+La Car Comparison API permitirá a los usuarios buscar, comparar y obtener información detallada sobre diferentes vehículos. Los usuarios podrán filtrar vehículos por marca, modelo, año, precio, características específicas (transmisión, combustible, etc.), y hacer comparaciones lado a lado de varios coches. También podrás permitir que los usuarios agreguen sus propios comentarios o reseñas sobre los vehículos.
+2. Arquitectura General
+
+La aplicación constará de las siguientes capas:
+
+    Controladores (Controllers): Exponen los endpoints de la API.
+    Servicios (Services): Contienen la lógica de negocio (búsqueda, comparación, etc.).
+    Repositorios (Repositories): Se comunican con la base de datos para realizar operaciones CRUD.
+    Modelo de Datos (Entities/DTOs): Representa las entidades de los coches, marcas, modelos, etc.
+    Seguridad: Se puede incluir autenticación y roles (usuarios, administradores).
+
+3. Características Principales
+
+Estas son las funcionalidades que podría tener tu Car Comparison API:
+a) CRUD de Vehículos
+
+    Crear, leer, actualizar y eliminar vehículos.
+    Filtrar coches por atributos como marca, modelo, año, tipo de combustible, transmisión, y precio.
+
+b) Comparación de Vehículos
+
+    Permitir a los usuarios seleccionar varios coches y obtener una comparación lado a lado de sus características (precio, motor, potencia, capacidad, consumo de combustible, etc.).
+    Generar una tabla de comparación dinámica con todos los atributos seleccionados.
+
+c) Reseñas y Comentarios de Usuarios
+
+    Los usuarios pueden agregar reseñas sobre coches (experiencias de uso, ventajas, desventajas).
+    Mostrar reseñas en cada perfil de coche.
+
+d) Filtrado Avanzado
+
+    Permitir a los usuarios buscar vehículos filtrando por múltiples criterios, como:
+        Precio máximo/mínimo
+        Tipo de combustible (gasolina, diésel, eléctrico, híbrido)
+        Año de fabricación
+        Potencia (caballos de fuerza)
+        Tipo de transmisión (manual, automática)
+        Consumo de combustible (km/l, mpg)
+
+e) Autenticación de Usuarios
+
+    Los usuarios pueden autenticarse para guardar comparaciones de vehículos.
+    Roles:
+        Usuario: Puede buscar y comparar coches, dejar reseñas.
+        Administrador: Puede gestionar (crear, actualizar, eliminar) vehículos en la base de datos.
+
+f) API Externa (Opcional)
+
+    Integrar una API externa para obtener datos actualizados de modelos de coches (ej. Edmunds API, CarQuery API, o algún otro proveedor de datos de automóviles).
+
+4. Estructura del Proyecto
+
+A continuación, te doy una estructura más técnica que podrías seguir en el desarrollo:
+a) Entidades (Entities)
+
+Modela las siguientes entidades para representar los datos en tu base de datos:
+
+    Car: Contendrá la información básica del coche.
+
+    java
+
+public class Car {
+    private Long id;
+    private String make;         // Marca (ej. Toyota)
+    private String model;        // Modelo (ej. Corolla)
+    private int year;            // Año de fabricación
+    private String fuelType;     // Tipo de combustible (ej. Gasolina, Diésel)
+    private String transmission; // Transmisión (Manual, Automática)
+    private int horsepower;      // Potencia en caballos de fuerza
+    private double price;        // Precio del coche
+    private double fuelEfficiency; // Eficiencia de combustible (ej. 12 km/l)
+}
+
+Review: Para las reseñas de los usuarios.
+
+java
+
+public class Review {
+    private Long id;
+    private Long carId;          // Relación con Car
+    private Long userId;         // Relación con User
+    private String content;      // Texto de la reseña
+    private int rating;          // Calificación (1-5 estrellas)
+    private LocalDate date;      // Fecha de la reseña
+}
+
+User: Para los usuarios que interactúan con la API.
+
+java
+
+    public class User {
+        private Long id;
+        private String username;
+        private String password;     // Hash de la contraseña
+        private String role;         // Rol (USER, ADMIN)
+    }
+
+b) Controladores (Controllers)
+
+Los controladores expondrán los endpoints de la API. Por ejemplo:
+
+    CarController:
+
+    java
+
+    @RestController
+    @RequestMapping("/api/cars")
+    public class CarController {
+
+        @GetMapping
+        public List<CarDTO> getAllCars(@RequestParam Map<String, String> filters) {
+            // Lógica para obtener coches filtrados
+        }
+
+        @GetMapping("/{id}")
+        public CarDTO getCarById(@PathVariable Long id) {
+            // Lógica para obtener detalles de un coche
+        }
+
+        @PostMapping
+        @PreAuthorize("hasRole('ADMIN')")
+        public CarDTO createCar(@RequestBody CarDTO carDTO) {
+            // Lógica para crear un nuevo coche
+        }
+        
+        @PutMapping("/{id}")
+        @PreAuthorize("hasRole('ADMIN')")
+        public CarDTO updateCar(@PathVariable Long id, @RequestBody CarDTO carDTO) {
+            // Lógica para actualizar un coche
+        }
+
+        @DeleteMapping("/{id}")
+        @PreAuthorize("hasRole('ADMIN')")
+        public ResponseEntity<?> deleteCar(@PathVariable Long id) {
+            // Lógica para eliminar un coche
+        }
+    }
+
+c) Servicios (Services)
+
+Los servicios contienen la lógica de negocio para manipular los datos. Por ejemplo:
+
+    CarService:
+
+    java
+
+    @Service
+    public class CarService {
+
+        private final CarRepository carRepository;
+
+        public List<CarDTO> getCars(Map<String, String> filters) {
+            // Lógica para aplicar filtros a los coches
+        }
+
+        public CarDTO getCarById(Long id) {
+            // Lógica para obtener un coche por ID
+        }
+
+        public CarDTO createCar(CarDTO carDTO) {
+            // Lógica para crear un coche
+        }
+
+        public CarDTO updateCar(Long id, CarDTO carDTO) {
+            // Lógica para actualizar un coche
+        }
+
+        public void deleteCar(Long id) {
+            // Lógica para eliminar un coche
+        }
+    }
+
+d) Repositorios (Repositories)
+
+Los repositorios se encargan de interactuar con la base de datos.
+
+    CarRepository (usando JPA):
+
+    java
+
+    @Repository
+    public interface CarRepository extends JpaRepository<Car, Long> {
+        // Métodos personalizados para buscar coches, si es necesario
+    }
+
+e) Filtros Avanzados
+
+Para aplicar filtros de búsqueda avanzados, puedes crear un servicio que acepte parámetros como marca, modelo, precio y transmisión, y genere una consulta dinámica:
+
+java
+
+public List<CarDTO> getCars(Map<String, String> filters) {
+    Specification<Car> specs = Specification.where(null);
+
+    if (filters.containsKey("make")) {
+        specs = specs.and(CarSpecifications.hasMake(filters.get("make")));
+    }
+    if (filters.containsKey("minPrice")) {
+        specs = specs.and(CarSpecifications.hasMinPrice(Double.valueOf(filters.get("minPrice"))));
+    }
+    // Añadir más filtros según sea necesario
+    return carRepository.findAll(specs);
+}
+
+f) Autenticación y Autorización
+
+Configura Spring Security para manejar autenticación y roles:
+
+    Usuarios administradores pueden crear/editar coches.
+    Usuarios normales pueden comparar coches y escribir reseñas.
+
+5. Base de Datos
+
+Puedes usar MySQL o PostgreSQL para la base de datos. El esquema incluirá tablas para:
+
+    cars: Información de los coches.
+    reviews: Reseñas de los usuarios.
+    users: Usuarios de la plataforma.
+
+6. Extensiones Futuras
+
+Para extender la funcionalidad, podrías:
+
+    Integrar una API externa que obtenga los datos más recientes de vehículos.
+    Añadir funcionalidades de pago para permitir a los usuarios acceder a comparaciones premium.
+    Incorporar estadísticas sobre los coches más populares o los más comparados.
+
+7. Herramientas Útiles
+
+    Swagger: Para documentar y probar la API.
+    JWT (JSON Web Tokens): Para manejar autenticación de usuarios.
+    JPA/Hibernate: Para interacción con la base de datos.
+
+Con este nivel de detalle, ya tienes una base sólida para comenzar el desarrollo de tu Car Comparison API en Spring Boot. Si necesitas más ayuda con la implementación o alguna parte específica del código, no dudes en preguntar. ¡Espero que disfrutes trabajando en este proyecto!
